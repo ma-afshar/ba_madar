@@ -1,0 +1,62 @@
+# Dependencies
+# =========================
+node_modules/
+
+
+# Build output
+# =========================
+dist/
+build/
+
+
+# Environment variables
+# =========================
+.env
+.env.*
+!.env.example
+
+
+# Logs
+# =========================
+logs/
+*.log
+
+
+# IDE
+# =========================
+.vscode/
+.idea/
+
+
+# Operating System
+# =========================
+.DS_Store
+Thumbs.db
+
+
+# Coverage
+# =========================
+coverage/
+
+
+# TypeScript
+# =========================
+*.tsbuildinfo
+
+
+# Prisma
+# =========================
+prisma/dev.db
+prisma/dev.db-journal
+
+
+# Codex / AI Agent
+# =========================
+.agent/
+
+
+# Temporary files
+# =========================
+*.tmp
+*.temp
+.cache/
