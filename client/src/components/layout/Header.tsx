@@ -1,8 +1,17 @@
+import { useNavigate } from "react-router-dom";
+
 export default function Header() {
+  const navigate = useNavigate();
+
   return (
     <header className="w-93.75 h-18 mx-auto bg-white border-b-2 border-[#DDDCDB] flex items-center">
       <div className="w-82 h-10 mx-auto flex items-center justify-between">
-        <div className="w-10 h-10 border border-[#C0C0C0] rounded-xl flex items-center">
+        <button
+          type="button"
+          aria-label="سبد خرید"
+          onClick={() => navigate("/basket")}
+          className="w-10 h-10 border border-[#C0C0C0] rounded-xl flex items-center bg-white cursor-pointer"
+        >
           <img
             src="/images/header/basket.png"
             alt="basket"
@@ -10,7 +19,7 @@ export default function Header() {
             height={16}
             className="w-4 h-4 mx-auto"
           />
-        </div>
+        </button>
         <div className="w-23 h-8 flex items-center justify-center">
           <div className="w-15 h-8">
             <img
