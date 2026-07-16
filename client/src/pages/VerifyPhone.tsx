@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { requestOtp, saveAuthToken, verifyOtp } from "../lib/auth";
 
 type VerifyLocationState = {
   phoneNumber?: string;
@@ -8,9 +9,10 @@ type VerifyLocationState = {
 export default function VerifyPhone() {
   const navigate = useNavigate();
   const { state } = useLocation();
-  const phoneNumber = (state as VerifyLocationState | null)?.phoneNumber ?? "۰۹۰۲۸۷۶۵۴۳۲";
+  const phoneNumber = (state as VerifyLocationState | null)?.phoneNumber ?? sessionStorage.getItem("pending_login_phone") ?? "";
   const [code, setCode] = useState(["", "", "", ""]);
   const [secondsLeft, setSecondsLeft] = useState(120);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
   const isCodeComplete = code.every(Boolean);
 
@@ -44,6 +46,40 @@ export default function VerifyPhone() {
   const handleCodeKeyDown = (index: number, key: string) => {
     if (key === "Backspace" && !code[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
+    }
+  };
+
+  const normalizeDigits = (value: string) => value
+    .replace(/[۰-۹]/g, (digit) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit)))
+    .replace(/[٠-٩]/g, (digit) => String("٠١٢٣٤٥٦٧٨٩".indexOf(digit)));
+
+  const handleVerify = async () => {
+    if (!isCodeComplete || isSubmitting) return;
+    setIsSubmitting(true);
+    try {
+      const result = await verifyOtp(phoneNumber, normalizeDigits(code.join("")));
+      saveAuthToken(result.token);
+      sessionStorage.removeItem("pending_login_phone");
+      navigate("/home", { replace: true });
+    } catch (error) {
+      setCode(["", "", "", ""]);
+      inputRefs.current[0]?.focus();
+      const errorCode = error instanceof Error ? error.message : "REQUEST_FAILED";
+      alert(errorCode === "OTP_EXPIRED" ? "کد منقضی شده است. کد جدید دریافت کنید." : "کد واردشده صحیح نیست.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleResend = async () => {
+    try {
+      const result = await requestOtp(phoneNumber);
+      if (result.debugCode) console.info(`Development OTP: ${result.debugCode}`);
+      setCode(["", "", "", ""]);
+      setSecondsLeft(120);
+      inputRefs.current[0]?.focus();
+    } catch {
+      alert("ارسال مجدد کد با مشکل مواجه شد.");
     }
   };
 
@@ -83,10 +119,10 @@ export default function VerifyPhone() {
             ))}
           </div>
 
-          <button type="button" className="login-continue verify-submit" disabled={!isCodeComplete}>تایید</button>
+          <button type="button" className="login-continue verify-submit" disabled={!isCodeComplete || isSubmitting} onClick={handleVerify}>تایید</button>
 
           <div className="verify-actions">
-            <button type="button" className="verify-resend" disabled={secondsLeft > 0} onClick={() => setSecondsLeft(120)}>
+            <button type="button" className="verify-resend" disabled={secondsLeft > 0} onClick={handleResend}>
               <span className="verify-clock" aria-hidden="true" />
               دریافت مجدد کد
             </button>

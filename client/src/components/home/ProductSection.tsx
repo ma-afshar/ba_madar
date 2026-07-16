@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useCart } from "../../context/CartContext";
 
 type Product = {
   id: number;
@@ -20,6 +21,7 @@ function getDiscountedPrice(price: number, discount: number) {
 
 export default function ProductSection() {
   const [products, setProducts] = useState<Product[]>([]);
+  const { addItem, quantityOf } = useCart();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -121,9 +123,10 @@ export default function ProductSection() {
 
                   <button
                     type="button"
+                    onClick={() => addItem(product)}
                     className="-mb-px mt-auto h-10 w-full shrink-0 rounded-[13px] border border-[#ECECEC] bg-[#F7F7F7] text-sm font-normal text-[#777]"
                   >
-                    افزودن به سبد
+                    {quantityOf(product.id) > 0 ? `افزودن مجدد (${quantityOf(product.id).toLocaleString("fa-IR")})` : "افزودن به سبد"}
                   </button>
                 </article>
               );

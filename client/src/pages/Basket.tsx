@@ -2,17 +2,12 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FestivalBanner from "../components/home/FestivalBanner";
 import BottomNavigation from "../components/layout/BottomNavigation";
+import { useCart, type CartItem } from "../context/CartContext";
 
-const products = [
-  { id: 1, image: "/images/products/oliveoil.png", title: "روغن زیتون بکر کریستال - ۵ لیتر پنیر فتا دوشه هراز روغن زیتون بکر کریستال - ۵ لیتر پنیر فتا دوشه هراز", price: "۳,۷۰۰,۰۰۰", cardPrice: "۳,۰۰۰,۰۰۰", discount: true, inCart: true },
-  { id: 2, image: "/images/products/kashk.png", title: "روغن زیتون بکر کریستال - ۵ لیتر پنیر فتا دوشه هراز روغن زیتون بکر کریستال", price: "۴۰,۰۰۰", cardPrice: "", discount: false, inCart: false },
-  { id: 3, image: "/images/products/oliveoil.png", title: "روغن زیتون بکر کریستال - ۵ لیتر پنیر فتا دوشه هراز روغن زیتون بکر کریستال - ۵ لیتر پنیر فتا دوشه هراز", price: "۳,۷۰۰,۰۰۰", cardPrice: "۳,۰۰۰,۰۰۰", discount: true, inCart: false },
-  { id: 4, image: "/images/products/oliveoil.png", title: "روغن زیتون بکر کریستال - ۵ لیتر پنیر فتا دوشه هراز روغن زیتون بکر کریستال - ۵ لیتر پنیر فتا دوشه هراز", price: "۳,۷۰۰,۰۰۰", cardPrice: "۳,۰۰۰,۰۰۰", discount: true, inCart: false },
-  { id: 5, image: "/images/products/oliveoil.png", title: "روغن زیتون بکر کریستال - ۵ لیتر پنیر فتا دوشه هراز روغن زیتون بکر کریستال - ۵ لیتر پنیر فتا دوشه هراز", price: "۳,۷۰۰,۰۰۰", cardPrice: "", discount: true, inCart: false },
-  { id: 6, image: "/images/products/kashk.png", title: "روغن زیتون بکر کریستال - ۵ لیتر پنیر فتا دوشه هراز روغن زیتون بکر کریستال", price: "۴۰,۰۰۰", cardPrice: "", discount: false, inCart: false },
-];
+function formatPrice(value: number) { return value.toLocaleString("fa-IR"); }
+function finalPrice(product: CartItem) { return Math.round((product.price * (1 - product.discount / 100)) / 10000) * 10000; }
 
-function BasketHeader() {
+function BasketHeader({ count }: { count: number }) {
   const navigate = useNavigate();
   return (
     <header className="search-page-header" dir="rtl">
@@ -24,66 +19,55 @@ function BasketHeader() {
         <button type="button" className="search-icon-button" aria-label="جستجو"><img src="/images/searchbar/search.png" alt="" /></button>
         <button type="button" className="search-cart-button">
           <span className="search-cart-icon"><img src="/images/header/basket.png" alt="" /></span>
-          <span><b>مشاهده سبد</b><small dir="ltr">۱ محصول</small></span>
+          <span><b>مشاهده سبد</b><small dir="ltr"><span>{count.toLocaleString("fa-IR")}</span><span>محصول</span></small></span>
         </button>
       </div>
     </header>
   );
 }
 
-type Product = (typeof products)[number];
-
-function ProductCard({ product, onOpen }: { product: Product; onOpen: () => void }) {
+function ProductCard({ product, onOpen }: { product: CartItem; onOpen: () => void }) {
+  const { increment, decrement, removeItem } = useCart();
+  const price = finalPrice(product);
   return (
     <article className="search-product-card" dir="rtl" role="button" tabIndex={0} onClick={onOpen} onKeyDown={(event) => { if (event.key === "Enter") onOpen(); }}>
       <div className="search-product-main">
-        <img className="search-product-image" src={product.image} alt="" />
+        <img className="search-product-image" src={product.image} alt={product.title} />
         <div className="search-product-info">
           <h2>{product.title}</h2>
           <div className="search-product-bottom">
-            {product.inCart ? (
-              <div className="search-counter" dir="ltr">
-                <button type="button" onClick={(event) => event.stopPropagation()}><img src="/images/basket/recycle-bin.png" alt="حذف" /></button>
-                <span>۱</span>
-                <button type="button" onClick={(event) => event.stopPropagation()}><img src="/images/basket/plus.png" alt="افزایش" /></button>
-              </div>
-            ) : <button type="button" className="search-add-button" onClick={(event) => event.stopPropagation()}>افزودن به سبد</button>}
+            <div className="search-counter" dir="ltr">
+              <button type="button" onClick={(event) => { event.stopPropagation(); product.quantity === 1 ? removeItem(product.id) : decrement(product.id); }}><img src="/images/basket/recycle-bin.png" alt={product.quantity === 1 ? "حذف" : "کاهش"} /></button>
+              <span>{product.quantity.toLocaleString("fa-IR")}</span>
+              <button type="button" onClick={(event) => { event.stopPropagation(); increment(product.id); }}><img src="/images/basket/plus.png" alt="افزایش" /></button>
+            </div>
             <div className="search-price">
-              {product.discount && <div><span className="search-discount">٪۱۰</span><del>۴,۰۰۰,۰۰۰ تومان</del></div>}
-              <strong>{product.price}</strong><small>تومان</small>
+              {product.discount > 0 && <div><span className="search-discount">٪{product.discount.toLocaleString("fa-IR")}</span><del>{formatPrice(product.price)} تومان</del></div>}
+              <strong>{formatPrice(price)}</strong><small>تومان</small>
             </div>
           </div>
         </div>
       </div>
-      {product.cardPrice && <div className="search-card-price"><b>قیمت با حامی کارت</b><span><strong>{product.cardPrice}</strong> تومان</span></div>}
+      <div className="search-card-price"><b>جمع این محصول</b><span><strong>{formatPrice(price * product.quantity)}</strong> تومان</span></div>
     </article>
   );
 }
 
-function ProductDetails({ product, onClose }: { product: Product; onClose: () => void }) {
+function ProductDetails({ product, onClose }: { product: CartItem; onClose: () => void }) {
+  const { addItem } = useCart();
   return (
     <div className="product-modal" role="dialog" aria-modal="true" aria-label="جزئیات محصول" onClick={onClose}>
       <section className="product-sheet" dir="rtl" onClick={(event) => event.stopPropagation()}>
         <button type="button" className="product-close" aria-label="بستن" onClick={onClose} />
-        <div className="product-gallery">
-          <img src={product.image} alt={product.title} />
-          <div className="product-dots" aria-hidden="true"><i /><i /><i /><i /></div>
-        </div>
+        <div className="product-gallery"><img src={product.image} alt={product.title} /><div className="product-dots" aria-hidden="true"><i /><i /><i /><i /></div></div>
         <h1>{product.title}</h1>
         <div className="product-specs">
-          <div><span>نوع بسته‌بندی :</span><strong>پلی اتیلن</strong></div>
-          <div><span>مواد تشکیل‌دهنده :</span><strong>شیر گاوی</strong></div>
-          <div><span>نوع بسته‌بندی :</span><strong>پلی اتیلن</strong></div>
-          <div><span>مواد تشکیل‌دهنده :</span><strong>شیر گاوی</strong></div>
+          <div><span>نوع بسته‌بندی :</span><strong>پلی اتیلن</strong></div><div><span>مواد تشکیل‌دهنده :</span><strong>شیر گاوی</strong></div>
+          <div><span>نوع بسته‌بندی :</span><strong>پلی اتیلن</strong></div><div><span>مواد تشکیل‌دهنده :</span><strong>شیر گاوی</strong></div>
         </div>
         <div className="product-purchase">
-          {product.cardPrice && (
-            <div className="product-support-price"><b>قیمت با حامی کارت</b><span><strong>{product.cardPrice}</strong> تومان</span></div>
-          )}
-          <div className="product-buy-row">
-            <button type="button">افزودن به سبد خرید</button>
-            <div><span>قیمت کالا</span><strong>{product.price}</strong><small>تومان</small></div>
-          </div>
+          <div className="product-support-price"><b>تعداد در سبد خرید</b><span><strong>{product.quantity.toLocaleString("fa-IR")}</strong> عدد</span></div>
+          <div className="product-buy-row"><button type="button" onClick={() => addItem(product)}>افزودن به سبد خرید</button><div><span>قیمت کالا</span><strong>{formatPrice(finalPrice(product))}</strong><small>تومان</small></div></div>
         </div>
       </section>
     </div>
@@ -91,20 +75,19 @@ function ProductDetails({ product, onClose }: { product: Product; onClose: () =>
 }
 
 export default function Basket() {
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-
+  const { items, totalQuantity } = useCart();
+  const [selectedProduct, setSelectedProduct] = useState<CartItem | null>(null);
   return (
     <>
       <main className="search-page">
-        <BasketHeader />
+        <BasketHeader count={totalQuantity} />
         <div className="search-festival"><FestivalBanner /></div>
         <div className="search-tools" dir="rtl">
-          <button type="button" className="search-sort"><img src="/images/basket/arrow-swap.png" alt="" /> مرتب سازی <span>⌄</span></button>
+          <button type="button" className="search-sort"><img src="/images/basket/arrow-swap.png" alt="" /> مرتب سازی <img className="search-sort-arrow" src="/images/basket/arrow-down.png" alt="" /></button>
           <button type="button" className="search-card-filter"><img src="/images/basket/card.png" alt="" /> حامی کارت</button>
         </div>
         <section className="search-results" aria-label="محصولات سبد خرید">
-          {products.map((product) => <ProductCard key={product.id} product={product} onOpen={() => setSelectedProduct(product)} />)}
-          <span className="search-loader" aria-label="در حال بارگذاری" />
+          {items.length ? items.map((product) => <ProductCard key={product.id} product={product} onOpen={() => setSelectedProduct(product)} />) : <div className="basket-empty">سبد خرید شما خالی است</div>}
         </section>
       </main>
       <BottomNavigation />

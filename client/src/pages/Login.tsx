@@ -1,14 +1,32 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { requestOtp } from "../lib/auth";
 
 export default function Login() {
   const navigate = useNavigate();
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const isComplete = phoneNumber.length === 11;
 
   const handlePhoneChange = (value: string) => {
     const digitsOnly = value.replace(/[^0-9۰-۹٠-٩]/g, "").slice(0, 11);
     setPhoneNumber(digitsOnly);
+  };
+
+  const handleContinue = async () => {
+    if (!isComplete || isSubmitting) return;
+    setIsSubmitting(true);
+    try {
+      const result = await requestOtp(phoneNumber);
+      sessionStorage.setItem("pending_login_phone", result.phone);
+      if (result.debugCode) console.info(`Development OTP: ${result.debugCode}`);
+      navigate("/login/verify", { state: { phoneNumber: result.phone } });
+    } catch (error) {
+      const code = error instanceof Error ? error.message : "REQUEST_FAILED";
+      alert(code === "OTP_RATE_LIMIT" ? "لطفاً کمی صبر کنید و دوباره تلاش کنید." : "ارسال کد با مشکل مواجه شد. دوباره تلاش کنید.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -40,8 +58,8 @@ export default function Login() {
           <button
             type="button"
             className="login-continue"
-            disabled={!isComplete}
-            onClick={() => navigate("/login/verify", { state: { phoneNumber } })}
+            disabled={!isComplete || isSubmitting}
+            onClick={handleContinue}
           >
             ادامه
           </button>

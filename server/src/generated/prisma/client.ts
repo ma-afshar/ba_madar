@@ -61,3 +61,18 @@ export type Product = Prisma.ProductModel
  * 
  */
 export type Banner = Prisma.BannerModel
+/**
+ * Model User
+ * 
+ */
+export type User = Prisma.UserModel
+/**
+ * Model OtpChallenge
+ * 
+ */
+export type OtpChallenge = Prisma.OtpChallengeModel
+/**
+ * Model Session
+ * 
+ */
+export type Session = Prisma.SessionModel

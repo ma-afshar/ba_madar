@@ -105,14 +105,15 @@ body { margin: 0; background: #1e1e1e; }
 .search-cart-icon img { width: 16px; height: 16px; filter: grayscale(1); opacity: .55; }
 .search-cart-button > span:last-child { display: flex; min-width: 76px; flex-direction: column; justify-content: center; padding: 0 7px; line-height: 1.2; }
 .search-cart-button b { font-size: 10px; }
-.search-cart-button small { direction: ltr; unicode-bidi: isolate; font-size: 8px; text-align: center; }
+.search-cart-button small { display: flex; direction: ltr; flex-direction: row-reverse; unicode-bidi: isolate; align-items: center; justify-content: center; gap: 2px; font-size: 8px; text-align: center; }
+.search-cart-button small span { unicode-bidi: isolate; }
 .search-festival { padding-top: 10px; }
 .search-festival > div > section { padding-bottom: 13px; }
 .search-tools { display: flex; align-items: center; justify-content: space-between; padding: 7px 20px 13px; }
 .search-tools button { display: flex; height: 29px; align-items: center; gap: 5px; border: 0; border-radius: 8px; padding: 0 10px; color: #818181; font-size: 11px; }
 .search-tools img { width: 15px; height: 15px; object-fit: contain; opacity: .75; }
 .search-sort { background: #fff; box-shadow: 0 0 0 1px #efefef; }
-.search-sort span { margin-right: 5px; font-size: 17px; }
+.search-tools .search-sort-arrow { width: 11px; height: 11px; margin-right: 5px; }
 .search-card-filter { background: #f8f8f8; }
 .search-results { display: flex; flex-direction: column; gap: 10px; padding: 0 20px; }
 .search-product-card { overflow: hidden; border: 1px solid #ededed; border-radius: 11px; background: #fff; box-shadow: 0 1px 2px rgb(0 0 0 / 3%); }
@@ -138,6 +139,7 @@ body { margin: 0; background: #1e1e1e; }
 .search-card-price b { font-size: 11px; }
 .search-card-price strong { font-size: 12px; }
 .search-loader { width: 22px; height: 22px; margin: 4px auto 1px; border: 2px dotted #ff875d; border-radius: 50%; animation: search-spin 1.1s linear infinite; }
+.basket-empty { display: grid; min-height: 180px; place-items: center; color: #999; font-size: 14px; }
 @keyframes search-spin { to { transform: rotate(360deg); } }
 
 @media (max-width: 350px) {
