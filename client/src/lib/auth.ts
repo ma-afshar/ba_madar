@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
+import { API_URL } from "./api";
 const TOKEN_KEY = "madar_auth_token";
 
 async function authRequest<T>(path: string, options: RequestInit = {}) {

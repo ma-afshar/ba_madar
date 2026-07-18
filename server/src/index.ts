@@ -6,12 +6,16 @@ import { categoryRoutes } from "./routes/category.route";
 import { productRoutes } from "./routes/product.route";
 import { bannerRoutes } from "./routes/banner.route";
 import { authRoutes } from "./routes/auth.route";
+import { adminRoutes } from "./routes/admin.route";
 
 const app = new Elysia()
   .get("/", () => "Hello from Elysia")
   .use(
     cors({
-      origin: "http://localhost:5173",
+      origin: [
+        /^http:\/\/(localhost|127\.0\.0\.1):\d+$/,
+        /^http:\/\/172\.20\.17\.127:\d+$/,
+      ],
       allowedHeaders: ["Content-Type", "Authorization"],
     }),
   )
@@ -20,7 +24,8 @@ const app = new Elysia()
   .use(productRoutes)
   .use(bannerRoutes)
   .use(authRoutes)
-  .listen(3000);
+  .use(adminRoutes)
+  .listen({ port: 3000, hostname: "0.0.0.0" });
 
 console.log(
   `🦊 Elysia is running at http://${app.server?.hostname}:${app.server?.port}`,

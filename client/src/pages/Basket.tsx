@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FestivalBanner from "../components/home/FestivalBanner";
 import BottomNavigation from "../components/layout/BottomNavigation";
@@ -6,6 +6,8 @@ import { useCart, type CartItem } from "../context/CartContext";
 
 function formatPrice(value: number) { return value.toLocaleString("fa-IR"); }
 function finalPrice(product: CartItem) { return Math.round((product.price * (1 - product.discount / 100)) / 10000) * 10000; }
+type BasketSort = "popular" | "discount" | "newest" | "cheap" | "expensive";
+const basketSortLabels: Record<BasketSort, string> = { popular: "پرفروش‌ترین", discount: "بیشترین تخفیف", newest: "جدیدترین", cheap: "ارزان‌ترین", expensive: "گران‌ترین" };
 
 function BasketHeader({ count }: { count: number }) {
   const navigate = useNavigate();
@@ -37,7 +39,9 @@ function ProductCard({ product, onOpen }: { product: CartItem; onOpen: () => voi
           <h2>{product.title}</h2>
           <div className="search-product-bottom">
             <div className="search-counter" dir="ltr">
-              <button type="button" onClick={(event) => { event.stopPropagation(); product.quantity === 1 ? removeItem(product.id) : decrement(product.id); }}><img src="/images/basket/recycle-bin.png" alt={product.quantity === 1 ? "حذف" : "کاهش"} /></button>
+              <button type="button" onClick={(event) => { event.stopPropagation(); product.quantity === 1 ? removeItem(product.id) : decrement(product.id); }} aria-label={product.quantity === 1 ? "حذف محصول" : "کم کردن تعداد"}>
+                {product.quantity === 1 ? <img src="/images/basket/recycle-bin.png" alt="" /> : <svg width="21" height="21" viewBox="0 0 22 22" fill="none" aria-hidden="true"><rect x="3.5" y="8" width="15" height="6" rx="3" stroke="#FF612B" strokeWidth="1.4"/></svg>}
+              </button>
               <span>{product.quantity.toLocaleString("fa-IR")}</span>
               <button type="button" onClick={(event) => { event.stopPropagation(); increment(product.id); }}><img src="/images/basket/plus.png" alt="افزایش" /></button>
             </div>
@@ -77,17 +81,23 @@ function ProductDetails({ product, onClose }: { product: CartItem; onClose: () =
 export default function Basket() {
   const { items, totalQuantity } = useCart();
   const [selectedProduct, setSelectedProduct] = useState<CartItem | null>(null);
+  const [sort, setSort] = useState<BasketSort>("popular");
+  const [sortOpen, setSortOpen] = useState(false);
+  const sortedItems = useMemo(() => [...items].sort((a, b) => sort === "discount" ? b.discount - a.discount : sort === "newest" ? b.id - a.id : sort === "cheap" ? finalPrice(a) - finalPrice(b) : sort === "expensive" ? finalPrice(b) - finalPrice(a) : b.quantity - a.quantity), [items, sort]);
   return (
     <>
-      <main className="search-page">
+      <main className="search-page" onClick={() => sortOpen && setSortOpen(false)}>
         <BasketHeader count={totalQuantity} />
         <div className="search-festival"><FestivalBanner /></div>
         <div className="search-tools" dir="rtl">
-          <button type="button" className="search-sort"><img src="/images/basket/arrow-swap.png" alt="" /> مرتب سازی <img className="search-sort-arrow" src="/images/basket/arrow-down.png" alt="" /></button>
+          <div className="catalog-sort basket-sort" onClick={(event) => event.stopPropagation()}>
+            <button type="button" onClick={() => setSortOpen(value => !value)}><img className="catalog-sort-icon" src="/images/basket/arrow-swap.png" alt="" /> مرتب‌سازی <img className={sortOpen ? "catalog-sort-arrow open" : "catalog-sort-arrow"} src="/images/basket/arrow-down.png" alt="" /></button>
+            {sortOpen && <div className="catalog-sort-menu">{(Object.keys(basketSortLabels) as BasketSort[]).map(option => <button type="button" key={option} className={sort === option ? "active" : ""} onClick={() => { setSort(option); setSortOpen(false); }}>{basketSortLabels[option]}</button>)}</div>}
+          </div>
           <button type="button" className="search-card-filter"><img src="/images/basket/card.png" alt="" /> حامی کارت</button>
         </div>
         <section className="search-results" aria-label="محصولات سبد خرید">
-          {items.length ? items.map((product) => <ProductCard key={product.id} product={product} onOpen={() => setSelectedProduct(product)} />) : <div className="basket-empty">سبد خرید شما خالی است</div>}
+          {sortedItems.length ? sortedItems.map((product) => <ProductCard key={product.id} product={product} onOpen={() => setSelectedProduct(product)} />) : <div className="basket-empty">سبد خرید شما خالی است</div>}
         </section>
       </main>
       <BottomNavigation />

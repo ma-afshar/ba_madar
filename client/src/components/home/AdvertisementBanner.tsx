@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
+import { API_URL } from "../../lib/api";
 
 type Banner = {
   id: number;
   image: string;
   link: string;
 };
-
-const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
 
 export default function AdvertisementBanner() {
   const [banner, setBanner] = useState<Banner | null>(null);

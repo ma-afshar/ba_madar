@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { API_URL } from "../../lib/api";
 
 type Category = {
   id: number;
@@ -6,7 +8,6 @@ type Category = {
   image: string;
 };
 
-const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
 
 export default function CategorySection() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -60,8 +61,8 @@ export default function CategorySection() {
 
           <div className="mt-3 grid grid-cols-4 gap-x-3 gap-y-3">
             {categories.map((category) => (
-              <a
-                href={`#category-${category.id}`}
+              <Link
+                to={`/search?category=${category.id}`}
                 key={category.id}
                 className="flex w-18.5 flex-col items-center text-center no-underline"
               >
@@ -75,7 +76,7 @@ export default function CategorySection() {
                 <span className="mt-1.5 flex min-h-8 items-start justify-center px-0.5 text-xs font-normal leading-4 text-[#777]">
                   {category.title}
                 </span>
-              </a>
+              </Link>
             ))}
           </div>
         </div>

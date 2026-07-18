@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useCart } from "../../context/CartContext";
+import { API_URL } from "../../lib/api";
 
 type Product = {
   id: number;
@@ -9,7 +10,6 @@ type Product = {
   discount: number;
 };
 
-const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
 
 function formatPrice(value: number) {
   return value.toLocaleString("fa-IR");
@@ -21,7 +21,7 @@ function getDiscountedPrice(price: number, discount: number) {
 
 export default function ProductSection() {
   const [products, setProducts] = useState<Product[]>([]);
-  const { addItem, quantityOf } = useCart();
+  const { addItem, increment, decrement, quantityOf } = useCart();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -77,6 +77,7 @@ export default function ProductSection() {
                 product.price,
                 product.discount
               );
+              const quantity = quantityOf(product.id);
 
               return (
                 <article
@@ -121,13 +122,15 @@ export default function ProductSection() {
                     </div>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={() => addItem(product)}
-                    className="-mb-px mt-auto h-10 w-full shrink-0 rounded-[13px] border border-[#ECECEC] bg-[#F7F7F7] text-sm font-normal text-[#777]"
-                  >
-                    {quantityOf(product.id) > 0 ? `افزودن مجدد (${quantityOf(product.id).toLocaleString("fa-IR")})` : "افزودن به سبد"}
-                  </button>
+                  {quantity > 0 ? (
+                    <div className="-mb-px mt-auto flex h-10 w-full shrink-0 items-center justify-between rounded-[13px] border border-[#ECECEC] bg-[#F7F7F7] px-3" dir="ltr">
+                      <button type="button" onClick={() => decrement(product.id)} aria-label="کم کردن تعداد" className="grid h-7 w-7 shrink-0 place-items-center rounded-full border-0 bg-white p-0 text-[#E94B24] shadow-sm"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg></button>
+                      <span className="text-sm font-bold text-[#666]">{quantity.toLocaleString("fa-IR")}</span>
+                      <button type="button" onClick={() => increment(product.id)} aria-label="زیاد کردن تعداد" className="grid h-7 w-7 shrink-0 place-items-center rounded-full border-0 bg-[#FF612B] p-0 text-white shadow-sm"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7h8M7 3v8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg></button>
+                    </div>
+                  ) : (
+                    <button type="button" onClick={() => addItem(product)} className="-mb-px mt-auto h-10 w-full shrink-0 rounded-[13px] border border-[#ECECEC] bg-[#F7F7F7] text-sm font-normal text-[#777]">افزودن به سبد</button>
+                  )}
                 </article>
               );
             })}

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API_URL } from "../../lib/api";
 
 type Slide = {
   id: number;
@@ -6,7 +7,6 @@ type Slide = {
   link: string;
 };
 
-const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
 
 export default function HeroSlider() {
   const [slides, setSlides] = useState<Slide[]>([]);
