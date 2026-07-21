@@ -21,15 +21,18 @@ const mediaBody = t.Object({
 
 export const adminRoutes = new Elysia({ prefix: "/admin" })
   .get("/overview", async () => {
-    const [products, categories, users, banners, sliders] = await Promise.all([
+    const [products, categories, users, banners, sliders, orders] = await Promise.all([
       prisma.product.findMany({ orderBy: { id: "desc" }, include: { category: true } }),
       prisma.category.findMany({ orderBy: { id: "desc" }, include: { _count: { select: { products: true } } } }),
-      prisma.user.findMany({ orderBy: { createdAt: "desc" }, select: { id: true, phone: true, createdAt: true } }),
+      prisma.user.findMany({ orderBy: { createdAt: "desc" }, select: { id: true, phone: true, firstName: true, lastName: true, createdAt: true, sessions: { where: { expiresAt: { gt: new Date() } }, select: { id: true } } } }).then(users => users.map(({ sessions, ...user }) => ({ ...user, isActive: sessions.length > 0 }))),
       prisma.banner.findMany({ orderBy: { id: "desc" } }),
       prisma.slider.findMany({ orderBy: { id: "desc" } }),
+      prisma.order.findMany({ orderBy: { createdAt: "desc" }, include: { user: { select: { id: true, phone: true, firstName: true, lastName: true } }, items: true } }),
     ]);
-    return { products, categories, users, banners, sliders };
+    return { products, categories, users, banners, sliders, orders };
   })
+  .patch("/orders/:id/status", ({ params, body }) => prisma.order.update({ where: { id: Number(params.id) }, data: { status: body.status }, include: { user: { select: { id: true, phone: true, firstName: true, lastName: true } }, items: true } }), { body: t.Object({ status: t.Union([t.Literal("active"), t.Literal("delivered"), t.Literal("cancelled")]) }) })
+  .delete("/orders/:id", ({ params }) => prisma.order.delete({ where: { id: Number(params.id) } }))
   .post("/products", ({ body }) => prisma.product.create({ data: body, include: { category: true } }), { body: productBody })
   .put("/products/:id", ({ params, body }) => prisma.product.update({ where: { id: Number(params.id) }, data: body, include: { category: true } }), { body: productBody })
   .delete("/products/:id", ({ params }) => prisma.product.delete({ where: { id: Number(params.id) } }))

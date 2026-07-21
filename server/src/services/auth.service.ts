@@ -80,15 +80,16 @@ export async function verifyOtp(rawPhone: string, code: string) {
   });
   const token = randomBytes(32).toString("base64url");
   await prisma.session.create({ data: { userId: user.id, tokenHash: hash(token), expiresAt: new Date(Date.now() + SESSION_TTL_MS) } });
-  return { token, user: { id: user.id, phone: user.phone } };
+  return { token, user: { id: user.id, phone: user.phone, firstName: user.firstName, lastName: user.lastName } };
 }
 
 export async function getSessionUser(token: string) {
   const session = await prisma.session.findUnique({ where: { tokenHash: hash(token) }, include: { user: true } });
   if (!session || session.expiresAt <= new Date()) return null;
-  return { id: session.user.id, phone: session.user.phone };
+  return { id: session.user.id, phone: session.user.phone, firstName: session.user.firstName, lastName: session.user.lastName };
 }
 
 export async function logout(token: string) {
-  await prisma.session.deleteMany({ where: { tokenHash: hash(token) } });
+  const session = await prisma.session.findUnique({ where: { tokenHash: hash(token) }, select: { userId: true } });
+  if (session) await prisma.session.deleteMany({ where: { userId: session.userId } });
 }

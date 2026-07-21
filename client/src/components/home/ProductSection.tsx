@@ -19,8 +19,22 @@ function getDiscountedPrice(price: number, discount: number) {
   return Math.round((price * (1 - discount / 100)) / 10000) * 10000;
 }
 
+function ProductDetails({ product, quantity, onClose }: { product: Product; quantity: number; onClose: () => void }) {
+  const { addItem, increment, decrement } = useCart();
+  return <div className="product-modal" role="dialog" aria-modal="true" aria-label="جزئیات محصول" onClick={onClose}>
+    <section className="product-sheet" dir="rtl" onClick={event => event.stopPropagation()}>
+      <button type="button" className="product-close" aria-label="بستن" onClick={onClose} />
+      <div className="product-gallery"><img src={product.image} alt={product.title} /><div className="product-dots" aria-hidden="true"><i /><i /><i /><i /></div></div>
+      <h1>{product.title}</h1>
+      <div className="product-specs"><div><span>نوع بسته‌بندی:</span><strong>بسته‌بندی استاندارد</strong></div><div><span>ضمانت کالا:</span><strong>تضمین اصالت</strong></div><div><span>شرایط نگهداری:</span><strong>در جای خشک و خنک</strong></div><div><span>ارسال:</span><strong>ارسال سریع</strong></div></div>
+      <div className="product-purchase"><div className="product-support-price"><b>تعداد در سبد خرید</b><span><strong>{quantity.toLocaleString("fa-IR")}</strong> عدد</span></div><div className="product-buy-row">{quantity > 0 ? <div className="product-modal-counter" dir="ltr"><button type="button" onClick={() => decrement(product.id)} aria-label="کم کردن تعداد">−</button><b>{quantity.toLocaleString("fa-IR")}</b><button type="button" onClick={() => increment(product.id)} aria-label="زیاد کردن تعداد">＋</button></div> : <button type="button" onClick={() => addItem(product)}>افزودن به سبد خرید</button>}<div><span>قیمت کالا</span><strong>{formatPrice(getDiscountedPrice(product.price, product.discount))}</strong><small>تومان</small></div></div></div>
+    </section>
+  </div>;
+}
+
 export default function ProductSection() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const { addItem, increment, decrement, quantityOf } = useCart();
 
   useEffect(() => {
@@ -82,10 +96,13 @@ export default function ProductSection() {
               return (
                 <article
                   key={product.id}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => setSelectedProduct(product)}
+                  onKeyDown={event => { if (event.key === "Enter") setSelectedProduct(product); }}
                   className="flex h-77.5 w-39.5 flex-col overflow-hidden rounded-[14px] border border-[#ECE8E6] bg-white"
                 >
-                  <a
-                    href={`#product-${product.id}`}
+                  <div
                     className="block px-1.5 pt-1.5"
                   >
                     <img
@@ -94,7 +111,7 @@ export default function ProductSection() {
                       className="h-36 w-full rounded-lg bg-[#FDFBFA] object-contain"
                       loading="lazy"
                     />
-                  </a>
+                  </div>
 
                   <h3 className="h-12 px-2.5 pt-1 text-right text-xs font-normal leading-5 text-[#555]">
                     {product.title}
@@ -124,12 +141,12 @@ export default function ProductSection() {
 
                   {quantity > 0 ? (
                     <div className="-mb-px mt-auto flex h-10 w-full shrink-0 items-center justify-between rounded-[13px] border border-[#ECECEC] bg-[#F7F7F7] px-3" dir="ltr">
-                      <button type="button" onClick={() => decrement(product.id)} aria-label="کم کردن تعداد" className="grid h-7 w-7 shrink-0 place-items-center rounded-full border-0 bg-white p-0 text-[#E94B24] shadow-sm"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg></button>
+                      <button type="button" onClick={event => { event.stopPropagation(); decrement(product.id); }} aria-label="کم کردن تعداد" className="grid h-7 w-7 shrink-0 place-items-center rounded-full border-0 bg-white p-0 text-[#E94B24] shadow-sm"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg></button>
                       <span className="text-sm font-bold text-[#666]">{quantity.toLocaleString("fa-IR")}</span>
-                      <button type="button" onClick={() => increment(product.id)} aria-label="زیاد کردن تعداد" className="grid h-7 w-7 shrink-0 place-items-center rounded-full border-0 bg-[#FF612B] p-0 text-white shadow-sm"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7h8M7 3v8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg></button>
+                      <button type="button" onClick={event => { event.stopPropagation(); increment(product.id); }} aria-label="زیاد کردن تعداد" className="grid h-7 w-7 shrink-0 place-items-center rounded-full border-0 bg-[#FF612B] p-0 text-white shadow-sm"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7h8M7 3v8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg></button>
                     </div>
                   ) : (
-                    <button type="button" onClick={() => addItem(product)} className="-mb-px mt-auto h-10 w-full shrink-0 rounded-[13px] border border-[#ECECEC] bg-[#F7F7F7] text-sm font-normal text-[#777]">افزودن به سبد</button>
+                    <button type="button" onClick={event => { event.stopPropagation(); addItem(product); }} className="-mb-px mt-auto h-10 w-full shrink-0 rounded-[13px] border border-[#ECECEC] bg-[#F7F7F7] text-sm font-normal text-[#777]">افزودن به سبد</button>
                   )}
                 </article>
               );
@@ -137,6 +154,7 @@ export default function ProductSection() {
           </div>
         </div>
       </section>
+      {selectedProduct && <ProductDetails product={selectedProduct} quantity={quantityOf(selectedProduct.id)} onClose={() => setSelectedProduct(null)} />}
     </div>
   );
 }

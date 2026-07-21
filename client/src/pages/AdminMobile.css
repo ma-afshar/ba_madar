@@ -1,0 +1,69 @@
+.admin-orders-list,
+.admin-order-card,
+.admin-order-card > header,
+.admin-order-products,
+.admin-order-meta,
+.admin-order-card > footer {
+  min-width: 0;
+}
+
+.admin-order-card { width: 100%; }
+
+.admin-orders-toolbar { align-items: center; }
+.admin-order-filters { display: flex; align-items: center; gap: 8px; }
+.admin-order-filters > label { display: flex; height: 38px; box-sizing: border-box; align-items: center; gap: 7px; border: 1px solid #e3e4e7; border-radius: 10px; padding: 0 10px; background: #fff; color: #999; }
+.admin-order-filters > label:focus-within { border-color: #ef805f; box-shadow: 0 0 0 3px #fff0eb; }
+.admin-order-filters input { width: 180px; min-width: 0; border: 0; outline: 0; background: transparent; color: #555; font-size: 9px; }
+.admin-order-filters .admin-order-date input { width: 112px; direction: ltr; }
+.admin-order-date > span { color: #999; font-size: 8px; }
+.admin-order-filters > button { height: 38px; border: 1px solid #e5e6e9; border-radius: 10px; padding: 0 12px; background: #f7f7f8; color: #777; font-size: 9px; white-space: nowrap; cursor: pointer; }
+.admin-order-filters > button.active { border-color: #f27a55; background: #fff1ec; color: #ed5a30; }
+
+.admin-delete-backdrop {
+  position: fixed; z-index: 160; inset: 0; display: grid; place-items: center;
+  padding: 20px; background: #171a20ad; backdrop-filter: blur(4px);
+}
+.admin-delete-dialog {
+  width: min(100%, 340px); box-sizing: border-box; border: 1px solid #3b404a;
+  border-radius: 20px; padding: 25px 22px 19px; background: linear-gradient(145deg, #2d323b, #22262e);
+  box-shadow: 0 25px 70px #0007; color: #fff; text-align: center;
+  animation: admin-delete-in .2s ease-out;
+}
+.admin-delete-icon {
+  display: grid; width: 52px; height: 52px; margin: 0 auto 13px; place-items: center;
+  border-radius: 15px; background: #4a3033; color: #ff7777; box-shadow: inset 0 0 0 1px #ff77772b;
+}
+.admin-delete-dialog > small { color: #f38a8a; font-size: 8px; }
+.admin-delete-dialog h2 { margin: 5px 0 0; font-size: 15px; }
+.admin-delete-dialog p { margin: 9px auto 20px; color: #adb1b9; font-size: 9px; line-height: 1.9; }
+.admin-delete-dialog > div:last-child { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.admin-delete-dialog button { height: 42px; border: 1px solid #454b56; border-radius: 10px; background: #363b45; color: #c9ccd1; font-size: 10px; cursor: pointer; }
+.admin-delete-dialog button.danger { border-color: #df5454; background: #df5454; color: #fff; font-weight: 700; box-shadow: 0 6px 15px #df54542e; }
+.admin-delete-dialog button:disabled { opacity: .6; cursor: default; }
+@keyframes admin-delete-in { from { opacity: 0; transform: translateY(9px) scale(.97); } to { opacity: 1; transform: none; } }
+
+@media (max-width: 700px) {
+  .admin-orders-toolbar { align-items: stretch; flex-direction: column; }
+  .admin-order-filters { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
+  .admin-order-filters > label:first-child { grid-column: 1 / -1; }
+  .admin-order-filters input { width: 100%; }
+  .admin-order-filters .admin-order-date input { width: 100%; }
+  .admin-order-filters > button { width: 100%; }
+  .admin-orders-list { gap: 11px; padding: 10px; }
+  .admin-order-card { border-radius: 13px; }
+  .admin-order-card > header { align-items: stretch; flex-direction: column; padding: 12px; }
+  .admin-order-card > header > div:first-child { display: flex; flex-direction: row; align-items: center; justify-content: space-between; }
+  .admin-order-user { border-top: 1px dashed #ececef; padding-top: 10px; }
+  .admin-order-products { gap: 7px; padding: 10px 12px; }
+  .admin-order-products > div { min-width: 190px; }
+  .admin-order-meta { grid-template-columns: 1fr 1fr; gap: 7px; padding: 0 12px 11px; }
+  .admin-order-meta > span { min-height: 47px; }
+  .admin-order-meta > span:first-child { grid-column: 1 / -1; }
+  .admin-order-card > footer { gap: 10px; padding: 11px 12px; }
+  .admin-order-status-control { width: 100%; justify-content: space-between; }
+  .admin-status-select { width: 190px; max-width: 62%; }
+  .admin-status-select > button { padding-inline: 12px; }
+  .admin-status-select > button img { margin-right: 10px; }
+  .admin-order-delete { width: 100%; align-self: stretch; justify-content: center; }
+  .admin-status-menu { bottom: 41px; }
+}

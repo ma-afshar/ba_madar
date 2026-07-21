@@ -56,6 +56,8 @@ export const ModelName = {
   Product: 'Product',
   Banner: 'Banner',
   User: 'User',
+  Order: 'Order',
+  OrderItem: 'OrderItem',
   OtpChallenge: 'OtpChallenge',
   Session: 'Session'
 } as const
@@ -118,11 +120,42 @@ export type BannerScalarFieldEnum = (typeof BannerScalarFieldEnum)[keyof typeof 
 export const UserScalarFieldEnum = {
   id: 'id',
   phone: 'phone',
+  firstName: 'firstName',
+  lastName: 'lastName',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const OrderScalarFieldEnum = {
+  id: 'id',
+  status: 'status',
+  totalPrice: 'totalPrice',
+  deliveryFee: 'deliveryFee',
+  paymentMethod: 'paymentMethod',
+  address: 'address',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  userId: 'userId'
+} as const
+
+export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
+
+
+export const OrderItemScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  title: 'title',
+  image: 'image',
+  price: 'price',
+  discount: 'discount',
+  quantity: 'quantity',
+  orderId: 'orderId'
+} as const
+
+export type OrderItemScalarFieldEnum = (typeof OrderItemScalarFieldEnum)[keyof typeof OrderItemScalarFieldEnum]
 
 
 export const OtpChallengeScalarFieldEnum = {

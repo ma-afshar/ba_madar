@@ -41,9 +41,43 @@ model Banner {
 model User {
   id        Int       @id @default(autoincrement())
   phone     String    @unique
+  firstName String?
+  lastName  String?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   sessions Session[]
+  orders   Order[]
+}
+
+model Order {
+  id            Int         @id @default(autoincrement())
+  status        String      @default("active")
+  totalPrice    Int
+  deliveryFee   Int
+  paymentMethod String
+  address       String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  userId        Int
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items         OrderItem[]
+
+  @@index([userId, createdAt])
+  @@index([status])
+}
+
+model OrderItem {
+  id        Int    @id @default(autoincrement())
+  productId Int
+  title     String
+  image     String
+  price     Int
+  discount  Int
+  quantity  Int
+  orderId   Int
+  order     Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
 }
 
 model OtpChallenge {
