@@ -13,6 +13,7 @@ export default function VerifyPhone() {
   const [code, setCode] = useState(["", "", "", ""]);
   const [secondsLeft, setSecondsLeft] = useState(120);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
   const isCodeComplete = code.every(Boolean);
 
@@ -32,6 +33,7 @@ export default function VerifyPhone() {
   );
 
   const handleCodeChange = (index: number, value: string) => {
+    if (errorMessage) setErrorMessage("");
     const digit = value.replace(/[^0-9۰-۹٠-٩]/g, "").slice(-1);
     const nextCode = [...code];
     nextCode[index] = digit;
@@ -55,6 +57,7 @@ export default function VerifyPhone() {
 
   const handleVerify = async () => {
     if (!isCodeComplete || isSubmitting) return;
+    setErrorMessage("");
     setIsSubmitting(true);
     try {
       const result = await verifyOtp(phoneNumber, normalizeDigits(code.join("")));
@@ -65,13 +68,20 @@ export default function VerifyPhone() {
       setCode(["", "", "", ""]);
       inputRefs.current[0]?.focus();
       const errorCode = error instanceof Error ? error.message : "REQUEST_FAILED";
-      alert(errorCode === "OTP_EXPIRED" ? "کد منقضی شده است. کد جدید دریافت کنید." : "کد واردشده صحیح نیست.");
+      setErrorMessage(
+        errorCode === "OTP_EXPIRED"
+          ? "زمان اعتبار کد به پایان رسیده است؛ لطفاً کد جدید دریافت کنید."
+          : errorCode === "INVALID_OTP"
+            ? "کد واردشده صحیح نیست؛ لطفاً دوباره بررسی کنید."
+            : "تأیید کد انجام نشد؛ لطفاً دوباره تلاش کنید."
+      );
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleResend = async () => {
+    setErrorMessage("");
     try {
       const result = await requestOtp(phoneNumber);
       if (result.debugCode) console.info(`Development OTP: ${result.debugCode}`);
@@ -79,7 +89,7 @@ export default function VerifyPhone() {
       setSecondsLeft(120);
       inputRefs.current[0]?.focus();
     } catch {
-      alert("ارسال مجدد کد با مشکل مواجه شد.");
+      setErrorMessage("ارسال مجدد کد انجام نشد؛ لطفاً دوباره تلاش کنید.");
     }
   };
 
@@ -102,7 +112,7 @@ export default function VerifyPhone() {
             کد ارسال شده به شماره موبایل <bdi>{phoneNumber}</bdi> را وارد کن
           </p>
 
-          <div className="verify-code" dir="ltr" aria-label="کد تایید">
+          <div className={errorMessage ? "verify-code has-error" : "verify-code"} dir="ltr" aria-label="کد تایید">
             {code.map((digit, index) => (
               <input
                 key={index}
@@ -114,10 +124,13 @@ export default function VerifyPhone() {
                 onChange={(event) => handleCodeChange(index, event.target.value)}
                 onKeyDown={(event) => handleCodeKeyDown(index, event.key)}
                 onFocus={(event) => event.currentTarget.select()}
+                aria-invalid={Boolean(errorMessage)}
                 aria-label={`رقم ${index + 1} کد تایید`}
               />
             ))}
           </div>
+
+          {errorMessage && <p className="verify-error" role="alert">{errorMessage}</p>}
 
           <button type="button" className="login-continue verify-submit" disabled={!isCodeComplete || isSubmitting} onClick={handleVerify}>تایید</button>
 

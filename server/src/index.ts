@@ -8,6 +8,7 @@ import { bannerRoutes } from "./routes/banner.route";
 import { authRoutes } from "./routes/auth.route";
 import { adminRoutes } from "./routes/admin.route";
 import { orderRoutes } from "./routes/order.route";
+import { specialOfferRoutes } from "./routes/special-offer.route";
 
 const app = new Elysia()
   .get("/", () => "Hello from Elysia")
@@ -26,6 +27,7 @@ const app = new Elysia()
   .use(bannerRoutes)
   .use(authRoutes)
   .use(orderRoutes)
+  .use(specialOfferRoutes)
   .use(adminRoutes)
   .listen({ port: 3000, hostname: "0.0.0.0" });
 

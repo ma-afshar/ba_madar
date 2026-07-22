@@ -54,6 +54,10 @@ export const ModelName = {
   Slider: 'Slider',
   Category: 'Category',
   Product: 'Product',
+  SpecialOffer: 'SpecialOffer',
+  PurchaseVoucher: 'PurchaseVoucher',
+  PurchaseVoucherItem: 'PurchaseVoucherItem',
+  Expense: 'Expense',
   Banner: 'Banner',
   User: 'User',
   Order: 'Order',
@@ -102,10 +106,70 @@ export const ProductScalarFieldEnum = {
   image: 'image',
   price: 'price',
   discount: 'discount',
+  stock: 'stock',
+  minStock: 'minStock',
   categoryId: 'categoryId'
 } as const
 
 export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeof ProductScalarFieldEnum]
+
+
+export const SpecialOfferScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  discount: 'discount',
+  label: 'label',
+  active: 'active',
+  sortOrder: 'sortOrder',
+  startsAt: 'startsAt',
+  endsAt: 'endsAt',
+  salesLimit: 'salesLimit',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SpecialOfferScalarFieldEnum = (typeof SpecialOfferScalarFieldEnum)[keyof typeof SpecialOfferScalarFieldEnum]
+
+
+export const PurchaseVoucherScalarFieldEnum = {
+  id: 'id',
+  supplierName: 'supplierName',
+  invoiceNo: 'invoiceNo',
+  invoiceFile: 'invoiceFile',
+  notes: 'notes',
+  status: 'status',
+  totalCost: 'totalCost',
+  voucherDate: 'voucherDate',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PurchaseVoucherScalarFieldEnum = (typeof PurchaseVoucherScalarFieldEnum)[keyof typeof PurchaseVoucherScalarFieldEnum]
+
+
+export const PurchaseVoucherItemScalarFieldEnum = {
+  id: 'id',
+  quantity: 'quantity',
+  unitCost: 'unitCost',
+  productId: 'productId',
+  voucherId: 'voucherId'
+} as const
+
+export type PurchaseVoucherItemScalarFieldEnum = (typeof PurchaseVoucherItemScalarFieldEnum)[keyof typeof PurchaseVoucherItemScalarFieldEnum]
+
+
+export const ExpenseScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  category: 'category',
+  amount: 'amount',
+  description: 'description',
+  expenseDate: 'expenseDate',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ExpenseScalarFieldEnum = (typeof ExpenseScalarFieldEnum)[keyof typeof ExpenseScalarFieldEnum]
 
 
 export const BannerScalarFieldEnum = {
@@ -138,6 +202,7 @@ export const OrderScalarFieldEnum = {
   address: 'address',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
+  inventoryReserved: 'inventoryReserved',
   userId: 'userId'
 } as const
 

@@ -5,7 +5,7 @@ import BottomNavigation from "../components/layout/BottomNavigation";
 import { useCart, type CartItem } from "../context/CartContext";
 
 function formatPrice(value: number) { return value.toLocaleString("fa-IR"); }
-function finalPrice(product: CartItem) { return Math.round((product.price * (1 - product.discount / 100)) / 10000) * 10000; }
+function finalPrice(product: CartItem) { return Math.floor((product.price * (1 - product.discount / 100)) / 500) * 500; }
 type BasketSort = "popular" | "discount" | "newest" | "cheap" | "expensive";
 const basketSortLabels: Record<BasketSort, string> = { popular: "پرفروش‌ترین", discount: "بیشترین تخفیف", newest: "جدیدترین", cheap: "ارزان‌ترین", expensive: "گران‌ترین" };
 
@@ -43,7 +43,7 @@ function ProductCard({ product, onOpen }: { product: CartItem; onOpen: () => voi
                 {product.quantity === 1 ? <img src="/images/basket/recycle-bin.png" alt="" /> : <svg width="21" height="21" viewBox="0 0 22 22" fill="none" aria-hidden="true"><rect x="3.5" y="8" width="15" height="6" rx="3" stroke="#FF612B" strokeWidth="1.4"/></svg>}
               </button>
               <span>{product.quantity.toLocaleString("fa-IR")}</span>
-              <button type="button" onClick={(event) => { event.stopPropagation(); increment(product.id); }}><img src="/images/basket/plus.png" alt="افزایش" /></button>
+              <button type="button" aria-disabled={product.quantity >= product.stock} onClick={(event) => { event.stopPropagation(); increment(product.id); }}><img src="/images/basket/plus.png" alt="افزایش" /></button>
             </div>
             <div className="search-price">
               {product.discount > 0 && <div><span className="search-discount">٪{product.discount.toLocaleString("fa-IR")}</span><del>{formatPrice(product.price)} تومان</del></div>}
@@ -73,7 +73,7 @@ function ProductDetails({ product, onClose }: { product: CartItem; onClose: () =
         </div>
         <div className="product-purchase">
           <div className="product-support-price"><b>تعداد در سبد خرید</b><span><strong>{currentQuantity.toLocaleString("fa-IR")}</strong> عدد</span></div>
-          <div className="product-buy-row">{currentQuantity > 0 ? <div className="product-modal-counter" dir="ltr"><button type="button" onClick={() => { if (currentQuantity === 1) onClose(); decrement(product.id); }} aria-label="کم کردن تعداد">−</button><b>{currentProduct.quantity.toLocaleString("fa-IR")}</b><button type="button" onClick={() => increment(product.id)} aria-label="زیاد کردن تعداد">＋</button></div> : <button type="button" onClick={() => addItem(product)}>افزودن به سبد خرید</button>}<div><span>قیمت کالا</span><strong>{formatPrice(finalPrice(product))}</strong><small>تومان</small></div></div>
+          <div className="product-buy-row">{currentQuantity > 0 ? <div className="product-modal-counter" dir="ltr"><button type="button" onClick={() => { if (currentQuantity === 1) onClose(); decrement(product.id); }} aria-label="کم کردن تعداد">−</button><b>{currentProduct.quantity.toLocaleString("fa-IR")}</b><button type="button" aria-disabled={currentQuantity >= currentProduct.stock} onClick={() => increment(product.id)} aria-label="زیاد کردن تعداد">＋</button></div> : <button type="button" aria-disabled={product.stock <= 0} onClick={() => addItem(product)}>{product.stock > 0 ? "افزودن به سبد خرید" : "ناموجود"}</button>}<div><span>قیمت کالا</span><strong>{formatPrice(finalPrice(product))}</strong><small>تومان</small></div></div>
         </div>
       </section>
     </div>
@@ -87,6 +87,7 @@ function CheckoutSection() {
   const [paymentMethod, setPaymentMethod] = useState("پرداخت آنلاین");
   const [isPaying, setIsPaying] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [checkoutError, setCheckoutError] = useState("");
   const deliveryFee = 25000;
   const productsTotal = items.reduce((sum, item) => sum + finalPrice(item) * item.quantity, 0);
   const payable = productsTotal + deliveryFee;
@@ -95,9 +96,14 @@ function CheckoutSection() {
     if (!items.length || !address.trim() || isPaying) return;
     setIsPaying(true);
     window.setTimeout(async () => {
-      const order = await placeOrder({ address: address.trim(), paymentMethod, deliveryFee });
-      if (order) navigate("/orders", { replace: true, state: { paymentSuccess: true, orderId: order.id } });
-      else { setIsPaying(false); navigate("/login"); }
+      try {
+        const order = await placeOrder({ address: address.trim(), paymentMethod, deliveryFee });
+        if (order) navigate("/orders", { replace: true, state: { paymentSuccess: true, orderId: order.id } });
+        else { setIsPaying(false); navigate("/login"); }
+      } catch {
+        setCheckoutError("موجودی در انبار کافی نیست؛ تعداد سبد با موجودی فعلی هماهنگ شد.");
+        setIsPaying(false);
+      }
     }, 900);
   };
 
@@ -108,6 +114,7 @@ function CheckoutSection() {
       {["پرداخت آنلاین", "پرداخت با کارت حامی"].map(method => <label key={method} className={paymentMethod === method ? "selected" : ""}><input type="radio" name="payment" value={method} checked={paymentMethod === method} onChange={() => setPaymentMethod(method)} /><span className="payment-radio" /><span><b>{method}</b><small>{method === "پرداخت آنلاین" ? "درگاه امن بانکی" : "استفاده از اعتبار کارت"}</small></span></label>)}
     </fieldset>
     <div className="checkout-summary"><div><span>جمع کالاها</span><b>{formatPrice(productsTotal)} تومان</b></div><div><span>هزینه ارسال</span><b>{formatPrice(deliveryFee)} تومان</b></div><div className="checkout-payable"><span>مبلغ قابل پرداخت</span><b>{formatPrice(payable)} <small>تومان</small></b></div></div>
+    {checkoutError && <p className="form-error" role="alert">{checkoutError}</p>}
     <button type="button" className="checkout-button" disabled={!items.length || !address.trim() || isPaying} onClick={handlePayment}>{isPaying ? <><i /> در حال انجام پرداخت...</> : <>پرداخت و ثبت سفارش <span>←</span></>}</button>
     <p className="checkout-note">با پرداخت، سفارش شما ثبت و به بخش سفارش‌های جاری منتقل می‌شود.</p>
   </div></section></div>}</>;

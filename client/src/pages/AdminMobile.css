@@ -8,6 +8,9 @@
 }
 
 .admin-order-card { width: 100%; }
+.admin-order-user .admin-order-user-avatar { width: 29px; height: 29px; background: linear-gradient(145deg, #343b48, #20242c); color: #fff; }
+.admin-order-user-avatar .admin-user-avatar-icon { width: 20px; height: 20px; }
+.admin-order-user { flex-direction: row-reverse; }
 
 .admin-orders-toolbar { align-items: center; }
 .admin-order-filters { display: flex; align-items: center; gap: 8px; }

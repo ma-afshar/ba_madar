@@ -27,9 +27,74 @@ model Product {
   image      String
   price      Int
   discount   Int
+  stock      Int      @default(0)
+  minStock   Int      @default(10)
 
   categoryId Int
   category   Category @relation(fields: [categoryId], references: [id])
+  purchaseVoucherItems PurchaseVoucherItem[]
+  specialOffer SpecialOffer?
+}
+
+model SpecialOffer {
+  id         Int       @id @default(autoincrement())
+  productId  Int       @unique
+  product    Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  discount   Int
+  label      String    @default("پیشنهاد ویژه")
+  active     Boolean   @default(true)
+  sortOrder  Int       @default(0)
+  startsAt   DateTime?
+  endsAt     DateTime?
+  salesLimit Int?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([active, sortOrder])
+}
+
+model PurchaseVoucher {
+  id           Int                   @id @default(autoincrement())
+  supplierName String
+  invoiceNo    String?
+  invoiceFile  String?
+  notes        String?
+  status       String                @default("draft")
+  totalCost    Int
+  voucherDate  DateTime
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+  items        PurchaseVoucherItem[]
+
+  @@index([status, voucherDate])
+  @@index([supplierName])
+}
+
+model PurchaseVoucherItem {
+  id        Int             @id @default(autoincrement())
+  quantity  Int
+  unitCost  Int
+  productId Int
+  product   Product         @relation(fields: [productId], references: [id])
+  voucherId Int
+  voucher   PurchaseVoucher @relation(fields: [voucherId], references: [id], onDelete: Cascade)
+
+  @@index([voucherId])
+  @@index([productId])
+}
+
+model Expense {
+  id          Int      @id @default(autoincrement())
+  title       String
+  category    String
+  amount      Int
+  description String?
+  expenseDate DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([expenseDate])
+  @@index([category])
 }
 
 model Banner {
@@ -58,6 +123,7 @@ model Order {
   address       String
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
+  inventoryReserved Boolean @default(false)
   userId        Int
   user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   items         OrderItem[]

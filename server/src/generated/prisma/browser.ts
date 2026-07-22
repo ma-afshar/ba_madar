@@ -33,6 +33,26 @@ export type Category = Prisma.CategoryModel
  */
 export type Product = Prisma.ProductModel
 /**
+ * Model SpecialOffer
+ * 
+ */
+export type SpecialOffer = Prisma.SpecialOfferModel
+/**
+ * Model PurchaseVoucher
+ * 
+ */
+export type PurchaseVoucher = Prisma.PurchaseVoucherModel
+/**
+ * Model PurchaseVoucherItem
+ * 
+ */
+export type PurchaseVoucherItem = Prisma.PurchaseVoucherItemModel
+/**
+ * Model Expense
+ * 
+ */
+export type Expense = Prisma.ExpenseModel
+/**
  * Model Banner
  * 
  */

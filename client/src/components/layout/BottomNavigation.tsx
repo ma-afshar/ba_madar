@@ -6,7 +6,7 @@ const navigationItems = [
   { label: "خانه", icon: "/images/navigationbar/vector.png", href: "/home" },
   { label: "سبد خرید", icon: "/images/navigationbar/shoppingbasket.png", href: "/basket" },
   { label: "سفارش‌ها", icon: "/images/navigationbar/receipt.png", href: "/orders" },
-  { label: "پروفایل", icon: "/images/navigationbar/user.png", href: "/login" },
+  { label: "ورود", icon: "/images/navigationbar/user.png", href: "/login" },
 ];
 
 export default function BottomNavigation() {
@@ -29,7 +29,7 @@ export default function BottomNavigation() {
             <>
               {active && <span className="absolute -top-px left-1/2 h-1 w-9 -translate-x-1/2 rounded-b-full bg-[#FF572D]" />}
               <span className="bottom-nav-icon-wrap"><img src={item.icon} alt="" aria-hidden="true" className={`h-5 w-5 object-contain ${active ? "bottom-nav-active-icon" : "grayscale opacity-60"}`} />{item.href === "/login" && currentUser && <i className="bottom-nav-online" aria-label="کاربر آنلاین" />}</span>
-              <span className={`mt-1 font-normal leading-4 ${item.href === "/login" && currentUser ? "bottom-nav-user-phone" : "text-[11px]"}`}>{item.href === "/login" && currentUser ? <bdi dir="ltr">{currentUser.phone.slice(0, 4)}<i>---</i>{currentUser.phone.slice(-4)}</bdi> : item.label}</span>
+              <span className={`bottom-nav-label ${item.href === "/login" ? "bottom-nav-account-label" : ""}`}>{item.href === "/login" && currentUser ? "پروفایل" : item.label}</span>
             </>
           );
 

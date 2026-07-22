@@ -32,7 +32,11 @@ export default function Login() {
   return (
     <main className="login-page" dir="rtl">
       <header className="login-header">
-        <button type="button" aria-label="بازگشت" onClick={() => navigate(-1)} className="login-back"><span aria-hidden="true">‹</span></button>
+        <button type="button" aria-label="بازگشت" onClick={() => navigate(-1)} className="login-back">
+          <svg aria-hidden="true" viewBox="0 0 20 20" fill="none">
+            <path d="M7 4l6 6-6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
       </header>
       <section className="login-content">
         <div className="login-brand" aria-label="مادر مارکت، فروشگاه سوپرمارکتی">

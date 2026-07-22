@@ -1,0 +1,36 @@
+.special-offer-modal-backdrop {
+  align-items: center;
+  overflow-y: auto;
+}
+
+.special-offer-modal {
+  width: min(680px, 100%);
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+}
+
+.special-offer-modal .special-offer-form.modal-form {
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 0;
+  padding: 20px 22px 22px;
+  background: #fff;
+}
+
+.special-offer-modal .special-offer-form-actions {
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.special-offer-modal .special-offer-form-actions button {
+  min-width: 110px;
+}
+
+@media (max-width: 620px) {
+  .special-offer-modal .special-offer-form.modal-form {
+    grid-template-columns: 1fr;
+  }
+
+  .special-offer-modal .special-offer-form .wide {
+    grid-column: auto;
+  }
+}

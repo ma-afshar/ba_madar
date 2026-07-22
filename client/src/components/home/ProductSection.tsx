@@ -8,6 +8,7 @@ type Product = {
   image: string;
   price: number;
   discount: number;
+  stock: number;
 };
 
 
@@ -16,7 +17,7 @@ function formatPrice(value: number) {
 }
 
 function getDiscountedPrice(price: number, discount: number) {
-  return Math.round((price * (1 - discount / 100)) / 10000) * 10000;
+  return Math.floor((price * (1 - discount / 100)) / 500) * 500;
 }
 
 function ProductDetails({ product, quantity, onClose }: { product: Product; quantity: number; onClose: () => void }) {
@@ -27,7 +28,7 @@ function ProductDetails({ product, quantity, onClose }: { product: Product; quan
       <div className="product-gallery"><img src={product.image} alt={product.title} /><div className="product-dots" aria-hidden="true"><i /><i /><i /><i /></div></div>
       <h1>{product.title}</h1>
       <div className="product-specs"><div><span>نوع بسته‌بندی:</span><strong>بسته‌بندی استاندارد</strong></div><div><span>ضمانت کالا:</span><strong>تضمین اصالت</strong></div><div><span>شرایط نگهداری:</span><strong>در جای خشک و خنک</strong></div><div><span>ارسال:</span><strong>ارسال سریع</strong></div></div>
-      <div className="product-purchase"><div className="product-support-price"><b>تعداد در سبد خرید</b><span><strong>{quantity.toLocaleString("fa-IR")}</strong> عدد</span></div><div className="product-buy-row">{quantity > 0 ? <div className="product-modal-counter" dir="ltr"><button type="button" onClick={() => decrement(product.id)} aria-label="کم کردن تعداد">−</button><b>{quantity.toLocaleString("fa-IR")}</b><button type="button" onClick={() => increment(product.id)} aria-label="زیاد کردن تعداد">＋</button></div> : <button type="button" onClick={() => addItem(product)}>افزودن به سبد خرید</button>}<div><span>قیمت کالا</span><strong>{formatPrice(getDiscountedPrice(product.price, product.discount))}</strong><small>تومان</small></div></div></div>
+      <div className="product-purchase"><div className="product-support-price"><b>تعداد در سبد خرید</b><span><strong>{quantity.toLocaleString("fa-IR")}</strong> عدد</span></div><div className="product-buy-row">{quantity > 0 ? <div className="product-modal-counter" dir="ltr"><button type="button" onClick={() => decrement(product.id)} aria-label="کم کردن تعداد">−</button><b>{quantity.toLocaleString("fa-IR")}</b><button type="button" aria-disabled={quantity >= product.stock} onClick={() => increment(product.id)} aria-label="زیاد کردن تعداد">＋</button></div> : <button type="button" aria-disabled={product.stock <= 0} onClick={() => addItem(product)}>{product.stock > 0 ? "افزودن به سبد خرید" : "ناموجود"}</button>}<div><span>قیمت کالا</span><strong>{formatPrice(getDiscountedPrice(product.price, product.discount))}</strong><small>تومان</small></div></div></div>
     </section>
   </div>;
 }
@@ -42,7 +43,7 @@ export default function ProductSection() {
 
     async function loadProducts() {
       try {
-        const response = await fetch(`${API_URL}/products`, {
+        const response = await fetch(`${API_URL}/special-offers`, {
           signal: controller.signal,
         });
 
@@ -76,7 +77,7 @@ export default function ProductSection() {
             id="products-title"
             className="text-base font-bold text-[#E94B24]"
           >
-            محصولات ویژه
+            پیشنهادات ویژه
           </h2>
 
           <p className="text-[10px] font-normal text-[#E96B4B]">
@@ -84,8 +85,8 @@ export default function ProductSection() {
           </p>
         </div>
 
-        <div className="mx-auto mt-2 w-82 max-w-full overflow-x-auto overscroll-x-contain scrollbar-none [&::-webkit-scrollbar]:hidden">
-          <div className="grid w-max grid-flow-col grid-rows-2 gap-x-2.5 gap-y-3.5">
+        <div className="mx-auto mt-2 w-82 max-w-full snap-x snap-mandatory overflow-x-auto overscroll-x-contain scroll-smooth scrollbar-none [&::-webkit-scrollbar]:hidden">
+          <div className="grid w-max grid-flow-col grid-rows-2 gap-x-2.5 gap-y-3.5 pl-px">
             {products.map((product) => {
               const finalPrice = getDiscountedPrice(
                 product.price,
@@ -100,7 +101,7 @@ export default function ProductSection() {
                   tabIndex={0}
                   onClick={() => setSelectedProduct(product)}
                   onKeyDown={event => { if (event.key === "Enter") setSelectedProduct(product); }}
-                  className="flex h-77.5 w-39.5 flex-col overflow-hidden rounded-[14px] border border-[#ECE8E6] bg-white"
+                  className="flex h-77.5 w-39.5 snap-start [scroll-snap-stop:always] flex-col overflow-hidden rounded-[14px] border border-[#ECE8E6] bg-white"
                 >
                   <div
                     className="block px-1.5 pt-1.5"
@@ -143,10 +144,10 @@ export default function ProductSection() {
                     <div className="-mb-px mt-auto flex h-10 w-full shrink-0 items-center justify-between rounded-[13px] border border-[#ECECEC] bg-[#F7F7F7] px-3" dir="ltr">
                       <button type="button" onClick={event => { event.stopPropagation(); decrement(product.id); }} aria-label="کم کردن تعداد" className="grid h-7 w-7 shrink-0 place-items-center rounded-full border-0 bg-white p-0 text-[#E94B24] shadow-sm"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg></button>
                       <span className="text-sm font-bold text-[#666]">{quantity.toLocaleString("fa-IR")}</span>
-                      <button type="button" onClick={event => { event.stopPropagation(); increment(product.id); }} aria-label="زیاد کردن تعداد" className="grid h-7 w-7 shrink-0 place-items-center rounded-full border-0 bg-[#FF612B] p-0 text-white shadow-sm"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7h8M7 3v8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg></button>
+                      <button type="button" aria-disabled={quantity >= product.stock} onClick={event => { event.stopPropagation(); increment(product.id); }} aria-label="زیاد کردن تعداد" className="grid h-7 w-7 shrink-0 place-items-center rounded-full border-0 bg-[#FF612B] p-0 text-white shadow-sm aria-disabled:opacity-40"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7h8M7 3v8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg></button>
                     </div>
                   ) : (
-                    <button type="button" onClick={event => { event.stopPropagation(); addItem(product); }} className="-mb-px mt-auto h-10 w-full shrink-0 rounded-[13px] border border-[#ECECEC] bg-[#F7F7F7] text-sm font-normal text-[#777]">افزودن به سبد</button>
+                    <button type="button" aria-disabled={product.stock <= 0} onClick={event => { event.stopPropagation(); addItem(product); }} className="-mb-px mt-auto h-10 w-full shrink-0 rounded-[13px] border border-[#ECECEC] bg-[#F7F7F7] text-sm font-normal text-[#777] aria-disabled:opacity-60">{product.stock > 0 ? "افزودن به سبد" : "ناموجود"}</button>
                   )}
                 </article>
               );

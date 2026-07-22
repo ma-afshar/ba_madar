@@ -1,0 +1,11 @@
+.admin-category-select .purchase-product-menu {
+  top: auto;
+  bottom: 46px;
+}
+
+@media (max-width: 760px) {
+  .admin-category-select .purchase-product-menu {
+    position: fixed;
+    inset: auto 10px 10px;
+  }
+}

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import BottomNavigation from "../components/layout/BottomNavigation";
-import { useCart, type CustomerOrder } from "../context/CartContext";
+import { useCart, type CartProduct, type CustomerOrder } from "../context/CartContext";
+import { API_URL } from "../lib/api";
 
 type OrderStatus = "active" | "delivered" | "cancelled";
 type Order = CustomerOrder;
@@ -25,14 +26,25 @@ function OrderCard({ order }: { order: Order }) {
   const [expanded, setExpanded] = useState(false);
   const { addItem } = useCart();
   const navigate = useNavigate();
-  const reorder = () => { order.items.forEach(item => { for (let index = 0; index < item.quantity; index += 1) addItem(item); }); navigate("/basket"); };
+  const reorder = async () => {
+    const response = await fetch(`${API_URL}/products`);
+    if (!response.ok) return;
+    const products = await response.json() as CartProduct[];
+    const currentProducts = new Map(products.map(product => [product.id, product]));
+    order.items.forEach(item => {
+      const product = currentProducts.get(item.id);
+      if (!product) return;
+      for (let index = 0; index < Math.min(item.quantity, product.stock); index += 1) addItem(product);
+    });
+    navigate("/basket");
+  };
   return <article className="order-card">
     <div className="order-card-top"><span className={`order-status ${order.status}`}><i />{order.statusLabel}</span><span className="order-number">شماره سفارش: <b>{order.id}</b></span></div>
     <p className="order-date">{order.date}</p>
     <div className="order-products" aria-label="کالاهای سفارش">{order.items.map(item => <div className="order-product" key={item.id}><img src={item.image} alt={item.title} />{item.quantity > 1 && <span>{item.quantity.toLocaleString("fa-IR")}</span>}</div>)}</div>
     {expanded && <div className="order-details">{order.items.map(item => <div key={item.id}><span>{item.title} × {item.quantity.toLocaleString("fa-IR")}</span><b>{formatPrice(item.price * item.quantity)} تومان</b></div>)}</div>}
     <div className="order-total"><span>مبلغ کل</span><b>{formatPrice(order.price)} <small>تومان</small></b></div>
-    <div className="order-actions"><button type="button" className="order-detail-button" onClick={() => setExpanded(value => !value)}>{expanded ? "بستن جزئیات" : "مشاهده جزئیات"}<img className={expanded ? "open" : ""} src="/images/basket/arrow-down.png" alt="" aria-hidden="true" /></button>{order.status === "delivered" && <button type="button" className="order-repeat-button" onClick={reorder}>خرید مجدد</button>}{order.status === "active" && <div className="order-progress"><i /><i /><i /></div>}</div>
+    <div className="order-actions"><button type="button" className="order-detail-button" onClick={() => setExpanded(value => !value)}>{expanded ? "بستن جزئیات" : "مشاهده جزئیات"}<img className={expanded ? "open" : ""} src="/images/basket/arrow-down.png" alt="" aria-hidden="true" /></button>{order.status === "delivered" && <button type="button" className="order-repeat-button" onClick={() => void reorder()}>خرید مجدد</button>}{order.status === "active" && <div className="order-progress"><i /><i /><i /></div>}</div>
   </article>;
 }
 

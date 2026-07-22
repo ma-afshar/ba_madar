@@ -49,6 +49,7 @@ export type OrderMinAggregateOutputType = {
   address: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  inventoryReserved: boolean | null
   userId: number | null
 }
 
@@ -61,6 +62,7 @@ export type OrderMaxAggregateOutputType = {
   address: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  inventoryReserved: boolean | null
   userId: number | null
 }
 
@@ -73,6 +75,7 @@ export type OrderCountAggregateOutputType = {
   address: number
   createdAt: number
   updatedAt: number
+  inventoryReserved: number
   userId: number
   _all: number
 }
@@ -101,6 +104,7 @@ export type OrderMinAggregateInputType = {
   address?: true
   createdAt?: true
   updatedAt?: true
+  inventoryReserved?: true
   userId?: true
 }
 
@@ -113,6 +117,7 @@ export type OrderMaxAggregateInputType = {
   address?: true
   createdAt?: true
   updatedAt?: true
+  inventoryReserved?: true
   userId?: true
 }
 
@@ -125,6 +130,7 @@ export type OrderCountAggregateInputType = {
   address?: true
   createdAt?: true
   updatedAt?: true
+  inventoryReserved?: true
   userId?: true
   _all?: true
 }
@@ -224,6 +230,7 @@ export type OrderGroupByOutputType = {
   address: string
   createdAt: Date
   updatedAt: Date
+  inventoryReserved: boolean
   userId: number
   _count: OrderCountAggregateOutputType | null
   _avg: OrderAvgAggregateOutputType | null
@@ -259,6 +266,7 @@ export type OrderWhereInput = {
   address?: Prisma.StringFilter<"Order"> | string
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Order"> | Date | string
+  inventoryReserved?: Prisma.BoolFilter<"Order"> | boolean
   userId?: Prisma.IntFilter<"Order"> | number
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   items?: Prisma.OrderItemListRelationFilter
@@ -273,6 +281,7 @@ export type OrderOrderByWithRelationInput = {
   address?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  inventoryReserved?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   items?: Prisma.OrderItemOrderByRelationAggregateInput
@@ -290,6 +299,7 @@ export type OrderWhereUniqueInput = Prisma.AtLeast<{
   address?: Prisma.StringFilter<"Order"> | string
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Order"> | Date | string
+  inventoryReserved?: Prisma.BoolFilter<"Order"> | boolean
   userId?: Prisma.IntFilter<"Order"> | number
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   items?: Prisma.OrderItemListRelationFilter
@@ -304,6 +314,7 @@ export type OrderOrderByWithAggregationInput = {
   address?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  inventoryReserved?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   _count?: Prisma.OrderCountOrderByAggregateInput
   _avg?: Prisma.OrderAvgOrderByAggregateInput
@@ -324,6 +335,7 @@ export type OrderScalarWhereWithAggregatesInput = {
   address?: Prisma.StringWithAggregatesFilter<"Order"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Order"> | Date | string
+  inventoryReserved?: Prisma.BoolWithAggregatesFilter<"Order"> | boolean
   userId?: Prisma.IntWithAggregatesFilter<"Order"> | number
 }
 
@@ -335,6 +347,7 @@ export type OrderCreateInput = {
   address: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  inventoryReserved?: boolean
   user: Prisma.UserCreateNestedOneWithoutOrdersInput
   items?: Prisma.OrderItemCreateNestedManyWithoutOrderInput
 }
@@ -348,6 +361,7 @@ export type OrderUncheckedCreateInput = {
   address: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  inventoryReserved?: boolean
   userId: number
   items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
 }
@@ -360,6 +374,7 @@ export type OrderUpdateInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  inventoryReserved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   user?: Prisma.UserUpdateOneRequiredWithoutOrdersNestedInput
   items?: Prisma.OrderItemUpdateManyWithoutOrderNestedInput
 }
@@ -373,6 +388,7 @@ export type OrderUncheckedUpdateInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  inventoryReserved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
 }
@@ -386,6 +402,7 @@ export type OrderCreateManyInput = {
   address: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  inventoryReserved?: boolean
   userId: number
 }
 
@@ -397,6 +414,7 @@ export type OrderUpdateManyMutationInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  inventoryReserved?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type OrderUncheckedUpdateManyInput = {
@@ -408,6 +426,7 @@ export type OrderUncheckedUpdateManyInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  inventoryReserved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   userId?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
@@ -430,6 +449,7 @@ export type OrderCountOrderByAggregateInput = {
   address?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  inventoryReserved?: Prisma.SortOrder
   userId?: Prisma.SortOrder
 }
 
@@ -449,6 +469,7 @@ export type OrderMaxOrderByAggregateInput = {
   address?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  inventoryReserved?: Prisma.SortOrder
   userId?: Prisma.SortOrder
 }
 
@@ -461,6 +482,7 @@ export type OrderMinOrderByAggregateInput = {
   address?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  inventoryReserved?: Prisma.SortOrder
   userId?: Prisma.SortOrder
 }
 
@@ -540,6 +562,7 @@ export type OrderCreateWithoutUserInput = {
   address: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  inventoryReserved?: boolean
   items?: Prisma.OrderItemCreateNestedManyWithoutOrderInput
 }
 
@@ -552,6 +575,7 @@ export type OrderUncheckedCreateWithoutUserInput = {
   address: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  inventoryReserved?: boolean
   items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
 }
 
@@ -593,6 +617,7 @@ export type OrderScalarWhereInput = {
   address?: Prisma.StringFilter<"Order"> | string
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Order"> | Date | string
+  inventoryReserved?: Prisma.BoolFilter<"Order"> | boolean
   userId?: Prisma.IntFilter<"Order"> | number
 }
 
@@ -604,6 +629,7 @@ export type OrderCreateWithoutItemsInput = {
   address: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  inventoryReserved?: boolean
   user: Prisma.UserCreateNestedOneWithoutOrdersInput
 }
 
@@ -616,6 +642,7 @@ export type OrderUncheckedCreateWithoutItemsInput = {
   address: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  inventoryReserved?: boolean
   userId: number
 }
 
@@ -643,6 +670,7 @@ export type OrderUpdateWithoutItemsInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  inventoryReserved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   user?: Prisma.UserUpdateOneRequiredWithoutOrdersNestedInput
 }
 
@@ -655,6 +683,7 @@ export type OrderUncheckedUpdateWithoutItemsInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  inventoryReserved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   userId?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
@@ -667,6 +696,7 @@ export type OrderCreateManyUserInput = {
   address: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  inventoryReserved?: boolean
 }
 
 export type OrderUpdateWithoutUserInput = {
@@ -677,6 +707,7 @@ export type OrderUpdateWithoutUserInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  inventoryReserved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   items?: Prisma.OrderItemUpdateManyWithoutOrderNestedInput
 }
 
@@ -689,6 +720,7 @@ export type OrderUncheckedUpdateWithoutUserInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  inventoryReserved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
 }
 
@@ -701,6 +733,7 @@ export type OrderUncheckedUpdateManyWithoutUserInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  inventoryReserved?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 
@@ -743,6 +776,7 @@ export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   address?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  inventoryReserved?: boolean
   userId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   items?: boolean | Prisma.Order$itemsArgs<ExtArgs>
@@ -758,6 +792,7 @@ export type OrderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   address?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  inventoryReserved?: boolean
   userId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["order"]>
@@ -771,6 +806,7 @@ export type OrderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   address?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  inventoryReserved?: boolean
   userId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["order"]>
@@ -784,10 +820,11 @@ export type OrderSelectScalar = {
   address?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  inventoryReserved?: boolean
   userId?: boolean
 }
 
-export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "status" | "totalPrice" | "deliveryFee" | "paymentMethod" | "address" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["order"]>
+export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "status" | "totalPrice" | "deliveryFee" | "paymentMethod" | "address" | "createdAt" | "updatedAt" | "inventoryReserved" | "userId", ExtArgs["result"]["order"]>
 export type OrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   items?: boolean | Prisma.Order$itemsArgs<ExtArgs>
@@ -815,6 +852,7 @@ export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     address: string
     createdAt: Date
     updatedAt: Date
+    inventoryReserved: boolean
     userId: number
   }, ExtArgs["result"]["order"]>
   composites: {}
@@ -1249,6 +1287,7 @@ export interface OrderFieldRefs {
   readonly address: Prisma.FieldRef<"Order", 'String'>
   readonly createdAt: Prisma.FieldRef<"Order", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Order", 'DateTime'>
+  readonly inventoryReserved: Prisma.FieldRef<"Order", 'Boolean'>
   readonly userId: Prisma.FieldRef<"Order", 'Int'>
 }
     
