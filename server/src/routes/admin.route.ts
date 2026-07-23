@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto";
 import { mkdir } from "node:fs/promises";
 import { resolve } from "node:path";
 import { prisma } from "../db/prisma";
+import { isValidPhone, normalizePhone } from "../services/auth.service";
 
 const invoiceUploadDir = resolve(process.cwd(), "uploads", "invoices");
 
@@ -158,6 +159,31 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
       return tx.order.delete({ where: { id } });
     });
   })
+  .delete("/users/:id", async ({ params, set }) => {
+    const id = Number(params.id);
+    const user = await prisma.user.findUnique({ where: { id }, include: { orders: { include: { items: true } } } });
+    if (!user) { set.status = 404; return { error: "NOT_FOUND" }; }
+    return prisma.$transaction(async tx => {
+      for (const order of user.orders) {
+        if (!order.inventoryReserved) continue;
+        for (const item of order.items) await tx.product.update({ where: { id: item.productId }, data: { stock: { increment: item.quantity } } });
+      }
+      await tx.user.delete({ where: { id } });
+      return { success: true, id };
+    });
+  })
+  .patch("/users/:id/phone", async ({ params, body, set }) => {
+    const id = Number(params.id);
+    const phone = normalizePhone(body.phone);
+    if (!isValidPhone(phone)) { set.status = 400; return { error: "INVALID_PHONE" }; }
+    const [user, duplicate] = await Promise.all([
+      prisma.user.findUnique({ where: { id }, select: { id: true } }),
+      prisma.user.findFirst({ where: { phone, id: { not: id } }, select: { id: true } }),
+    ]);
+    if (!user) { set.status = 404; return { error: "NOT_FOUND" }; }
+    if (duplicate) { set.status = 409; return { error: "PHONE_ALREADY_EXISTS" }; }
+    return prisma.user.update({ where: { id }, data: { phone }, select: { id: true, phone: true } });
+  }, { body: t.Object({ phone: t.String() }) })
   .patch("/products/:id/inventory", ({ params, body }) => prisma.product.update({ where: { id: Number(params.id) }, data: { minStock: body.minStock } }), { body: t.Object({ minStock: t.Number({ minimum: 0 }) }) })
   .post("/products", ({ body }) => prisma.product.create({ data: body, include: { category: true } }), { body: productBody })
   .put("/products/:id", ({ params, body }) => prisma.product.update({ where: { id: Number(params.id) }, data: body, include: { category: true } }), { body: productBody })

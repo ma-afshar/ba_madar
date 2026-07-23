@@ -13,6 +13,7 @@ export default function VerifyPhone() {
   const [code, setCode] = useState(["", "", "", ""]);
   const [secondsLeft, setSecondsLeft] = useState(120);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isResending, setIsResending] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
   const isCodeComplete = code.every(Boolean);
@@ -81,22 +82,34 @@ export default function VerifyPhone() {
   };
 
   const handleResend = async () => {
+    if (secondsLeft > 0 || isResending) return;
     setErrorMessage("");
+    setIsResending(true);
     try {
       const result = await requestOtp(phoneNumber);
       if (result.debugCode) console.info(`Development OTP: ${result.debugCode}`);
       setCode(["", "", "", ""]);
-      setSecondsLeft(120);
+      setSecondsLeft(result.expiresIn);
       inputRefs.current[0]?.focus();
     } catch {
       setErrorMessage("ارسال مجدد کد انجام نشد؛ لطفاً دوباره تلاش کنید.");
+    } finally {
+      setIsResending(false);
     }
+  };
+
+  const handleBack = () => {
+    setSecondsLeft(0);
+    setCode(["", "", "", ""]);
+    sessionStorage.setItem("restart_otp_phone", phoneNumber);
+    sessionStorage.removeItem("pending_login_phone");
+    navigate(-1);
   };
 
   return (
     <main className="login-page verify-page" dir="rtl">
       <header className="login-header">
-        <button type="button" aria-label="بازگشت" onClick={() => navigate(-1)} className="login-back">
+        <button type="button" aria-label="بازگشت" onClick={handleBack} className="login-back">
           <span aria-hidden="true">‹</span>
         </button>
       </header>
@@ -135,12 +148,12 @@ export default function VerifyPhone() {
           <button type="button" className="login-continue verify-submit" disabled={!isCodeComplete || isSubmitting} onClick={handleVerify}>تایید</button>
 
           <div className="verify-actions">
-            <button type="button" className="verify-resend" disabled={secondsLeft > 0} onClick={handleResend}>
+            <button type="button" className="verify-resend" disabled={secondsLeft > 0 || isResending} onClick={handleResend}>
               <span className="verify-clock" aria-hidden="true" />
               دریافت مجدد کد
             </button>
             <span className="verify-timer" dir="ltr">{formattedTimer}</span>
-            <button type="button" className="verify-edit" onClick={() => navigate(-1)}>
+            <button type="button" className="verify-edit" onClick={handleBack}>
               <img className="verify-edit-icon" src="/images/login/edit.png" alt="" aria-hidden="true" />
               ویرایش شماره
             </button>

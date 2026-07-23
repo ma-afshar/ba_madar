@@ -12,10 +12,10 @@ async function authRequest<T>(path: string, options: RequestInit = {}) {
   return data;
 }
 
-export function requestOtp(phone: string) {
+export function requestOtp(phone: string, restart = false) {
   return authRequest<{ phone: string; expiresIn: number; debugCode?: string }>("/request-otp", {
     method: "POST",
-    body: JSON.stringify({ phone }),
+    body: JSON.stringify({ phone, restart }),
   });
 }
 

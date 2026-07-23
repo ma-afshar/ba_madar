@@ -12,7 +12,7 @@ const basketSortLabels: Record<BasketSort, string> = { popular: "پرفروش‌
 function BasketHeader({ count }: { count: number }) {
   const navigate = useNavigate();
   return (
-    <header className="search-page-header" dir="rtl">
+    <header className="search-page-header basket-page-header" dir="rtl">
       <button type="button" className="search-brand" onClick={() => navigate("/home")}>
         <img src="/images/header/logo.png" alt="مادر مارکت" />
         <img src="/images/header/direction.png" alt="" aria-hidden="true" />

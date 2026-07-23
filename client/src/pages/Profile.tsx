@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import BottomNavigation from "../components/layout/BottomNavigation";
 import { getCurrentUser, logout, updateProfile, type AuthUser } from "../lib/auth";
 
+const formatPhone = (value: string) => [value.slice(0, 4), value.slice(4, 7), value.slice(7, 11)].filter(Boolean).join(" ");
+
 export default function Profile() {
   const navigate = useNavigate();
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -21,10 +23,10 @@ export default function Profile() {
   if (loading || !user) return <main className="profile-page"><div className="profile-loading"><i />در حال دریافت اطلاعات...</div></main>;
   return <><main className="profile-page" dir="rtl">
     <header className="profile-header"><button type="button" onClick={() => navigate("/home")} aria-label="بازگشت">‹</button><h1>پروفایل من</h1><img src="/images/header/logo.png" alt="مادر مارکت" /></header>
-    <section className="profile-hero"><div className="profile-avatar"><img src="/images/navigationbar/user.png" alt="" aria-hidden="true" /><i /></div><div><h2>{firstName || lastName ? `${firstName} ${lastName}`.trim() : "کاربر مادر مارکت"}</h2><p dir="ltr">{user.phone}</p><span>حساب فعال</span></div></section>
+    <section className="profile-hero"><div className="profile-avatar"><img src="/images/navigationbar/user.png" alt="" aria-hidden="true" /><i /></div><div><h2>{firstName || lastName ? `${firstName} ${lastName}`.trim() : "کاربر مادر مارکت"}</h2><p dir="ltr">{formatPhone(user.phone)}</p><span>حساب فعال</span></div></section>
     <form className="profile-form" onSubmit={save}><div className="profile-form-title"><h2>اطلاعات شخصی</h2><p>نام و نام خانوادگی خود را تکمیل یا ویرایش کنید.</p></div>
       <div className="profile-name-row"><label><span>نام</span><input value={firstName} onChange={event => setFirstName(event.target.value)} maxLength={60} placeholder="نام خود را وارد کنید" /></label><label><span>نام خانوادگی</span><input value={lastName} onChange={event => setLastName(event.target.value)} maxLength={60} placeholder="نام خانوادگی" /></label></div>
-      <label><span>شماره موبایل</span><div className="profile-phone"><input dir="ltr" value={user.phone} readOnly /><span>تأیید شده ✓</span></div><small>شماره موبایل حساب قابل تغییر نیست.</small></label>
+      <label><span>شماره موبایل</span><div className="profile-phone"><input dir="ltr" value={formatPhone(user.phone)} readOnly /><span>تأیید شده ✓</span></div><small>شماره موبایل حساب قابل تغییر نیست.</small></label>
       {message && <p className={message.includes("موفقیت") ? "profile-message success" : "profile-message"}>{message}</p>}
       <button className="profile-save" disabled={saving}>{saving ? "در حال ذخیره..." : "ذخیره تغییرات"}</button>
     </form>

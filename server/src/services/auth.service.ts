@@ -44,12 +44,12 @@ async function sendOtp(phone: string, code: string) {
   if (!response.ok) throw new Error("SMS_SEND_FAILED");
 }
 
-export async function requestOtp(rawPhone: string) {
+export async function requestOtp(rawPhone: string, restart = false) {
   const phone = normalizePhone(rawPhone);
   if (!isValidPhone(phone)) throw new Error("INVALID_PHONE");
 
   const latest = await prisma.otpChallenge.findFirst({ where: { phone }, orderBy: { createdAt: "desc" } });
-  if (latest && Date.now() - latest.createdAt.getTime() < 60_000) throw new Error("OTP_RATE_LIMIT");
+  if (!restart && latest && Date.now() - latest.createdAt.getTime() < 60_000) throw new Error("OTP_RATE_LIMIT");
 
   const code = String(randomInt(1000, 10000));
   await prisma.otpChallenge.create({

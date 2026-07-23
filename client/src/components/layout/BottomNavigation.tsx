@@ -34,11 +34,11 @@ export default function BottomNavigation() {
           );
 
           return href.startsWith("/") ? (
-            <Link key={item.label} to={href} aria-current={active ? "page" : undefined} className={`relative flex flex-col items-center pt-3 no-underline ${active ? "text-[#FF572D]" : "text-[#B8B8B8]"}`}>
+            <Link key={item.label} to={href} aria-current={active ? "page" : undefined} className={`bottom-nav-item relative flex flex-col items-center pt-3 no-underline ${active ? "text-[#FF572D]" : "text-[#B8B8B8]"}`}>
               {content}
             </Link>
           ) : (
-            <a key={item.label} href={href} className="relative flex flex-col items-center pt-3 text-[#B8B8B8] no-underline">{content}</a>
+            <a key={item.label} href={href} className="bottom-nav-item relative flex flex-col items-center pt-3 text-[#B8B8B8] no-underline">{content}</a>
           );
         })}
       </div>

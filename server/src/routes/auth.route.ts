@@ -8,13 +8,13 @@ function bearerToken(header?: string) {
 
 export const authRoutes = new Elysia({ prefix: "/auth" })
   .post("/request-otp", async ({ body, set }) => {
-    try { return await requestOtp(body.phone); }
+    try { return await requestOtp(body.phone, body.restart); }
     catch (error) {
       const code = error instanceof Error ? error.message : "UNKNOWN_ERROR";
       set.status = code === "OTP_RATE_LIMIT" ? 429 : code === "INVALID_PHONE" ? 400 : 503;
       return { error: code };
     }
-  }, { body: t.Object({ phone: t.String() }) })
+  }, { body: t.Object({ phone: t.String(), restart: t.Optional(t.Boolean()) }) })
   .post("/verify-otp", async ({ body, set }) => {
     try { return await verifyOtp(body.phone, body.code); }
     catch (error) {

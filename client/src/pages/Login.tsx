@@ -17,7 +17,9 @@ export default function Login() {
     if (!isComplete || isSubmitting) return;
     setIsSubmitting(true);
     try {
-      const result = await requestOtp(phoneNumber);
+      const restartPhone = sessionStorage.getItem("restart_otp_phone");
+      const result = await requestOtp(phoneNumber, Boolean(restartPhone));
+      sessionStorage.removeItem("restart_otp_phone");
       sessionStorage.setItem("pending_login_phone", result.phone);
       if (result.debugCode) console.info(`Development OTP: ${result.debugCode}`);
       navigate("/login/verify", { state: { phoneNumber: result.phone } });
@@ -33,9 +35,7 @@ export default function Login() {
     <main className="login-page" dir="rtl">
       <header className="login-header">
         <button type="button" aria-label="بازگشت" onClick={() => navigate(-1)} className="login-back">
-          <svg aria-hidden="true" viewBox="0 0 20 20" fill="none">
-            <path d="M7 4l6 6-6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+          <img src="/images/header/direction.png" alt="" aria-hidden="true" />
         </button>
       </header>
       <section className="login-content">
